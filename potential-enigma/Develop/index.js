@@ -1,12 +1,14 @@
 // TODO: Include packages needed for this application
 const inquirer = require('inquirer');
 const fs = require('fs');
-const generateMarkdown = require('./utils');
+const generateMarkdown = require('./utils/generateMarkdown');
 
 
 // TODO: Create an array of questions for user input
 
-const questions = [ {
+const questions = () =>{
+    return inquirer.prompt(
+ [ {
     type: 'input',
     message: 'What is your project title?',
     name: 'name', 
@@ -33,8 +35,8 @@ const questions = [ {
 
     {
         type: 'input',
-        message: 'What license will you use?',
-        name: 'license',
+        message: 'What license will you use? Please choose between, MIT, GPL, BSD, Apache, or CC0: ',
+        name: 'licenses',
     },
 
     {
@@ -45,65 +47,34 @@ const questions = [ {
 
     {
         type: 'input',
-        message: 'Tests?',
+        message: 'Are their any additional tests that need be completed?',
         name: 'tests',
     },
 
     {
         type: 'input',
-        message: 'Questions?',
+        message: 'How can people reach out to if they have questions or comments? Email or Github for example: ',
         name: 'questions',
     },
-];
+    
+])}
 
 // TODO: Create a function to write README file
-
 function writeToFile(fileName, data) {
-    fs.appendFile('README.md', (questions[0]), error => {
-        !error ? console.log('Success!')
-        : console.log('Something went wrong...')})
-        }
+    fs.writeFile('./README.md', data, err => {
+        err ? console.error(err) : console.log('Success! Your new README has been created!')
+    })
+}
 
-writeToFile();
 // TODO: Create a function to initialize app
+function init() {
+    questions() 
+        .then(input => {
+            return generateMarkdown(input);
+        })
+        .then(markdown => {
+            writeToFile('./README.md', markdown);
+        })
+}
 
-function init() {}
-
-// Function call to initialize app
-
-
-
-
-// inquirer
-//         .prompt({
-//             type: 'input', 
-//             message: 'what is your project title?',
-//             name: 'projectTitle', 
-//         },
-//         {
-//             type: 'input', 
-//             message: 'Description of the project',
-//             name: 'projectTitle', 
-//         }, 
-//         {
-//             type: 'input', 
-//             message: 'Table of contents: ',
-//             name: 'projectTitle',
-//         },
-//         {
-//             type: 'input', 
-//             message: 'Table of contents: ',
-//             name: 'projectTitle',
-// //         }
-        
-//         )
-
-                    'What is your project title?', 
-                    'Description of the project', 
-                    'Table of contents: ', 
-                    'Installation instructions?', 
-                    'Usage?', 
-                    'License: ', 
-                    'Contributors?', 
-                    'Tests?', 
-                    'Questions?'
+init();
